@@ -2,7 +2,6 @@
 
 cimport lame
 
-
 cdef class Hip:
     """ hip decoder class
 
@@ -11,16 +10,21 @@ cdef class Hip:
 
     """
 
-    cdef lame.hip_t hip
+    cdef lame.hip_t hip_handle # Renamed for clarity
 
     def __cinit__(self):
-        self.hip = lame.hip_decode_init()
-        if not self.hip:
-            raise MemoryError()
+        # hip_decode_init returns a hip_t (a pointer), assign it to the pointer variable
+        self.hip_handle = lame.hip_decode_init()
+        # In C, a NULL pointer indicates failure, which translates to Python's None
+        if not self.hip_handle:
+            raise MemoryError("Failed to initialize LAME HIP decoder")
 
     def __dealloc__(self):
-        if self.hip:
-            lame.hip_decode_exit(self.hip)
+        # Pass the hip_t pointer to the exit function
+        if self.hip_handle: # Check if the pointer is not NULL
+            lame.hip_decode_exit(self.hip_handle)
+            # Set the pointer to NULL after freeing to avoid double freeing
+            self.hip_handle = NULL # You might need to cimport NULL from libc.stdlib or similar
 
     def decode(self,
                mp3_buffer,
@@ -50,7 +54,9 @@ cdef class Hip:
                        size_t mp3_length,
                        unsigned char* pcm_lbuffer,
                        unsigned char* pcm_rbuffer):
-        return lame.hip_decode1(self.hip,
+        # Pass the hip_t pointer to the decode function
+        # Cast pcm_lbuffer and pcm_rbuffer to short* is correct as per the pxd declaration
+        return lame.hip_decode1(self.hip_handle,
                                 mp3_buffer,
                                 mp3_length,
                                 <short*>pcm_lbuffer,
