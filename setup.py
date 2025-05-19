@@ -8,7 +8,7 @@ import os # Import the os module
 setup_dir = os.path.dirname(os.path.abspath(__file__))
 
 setup(name='streamp3-313compat',
-      version='0.1.12',
+      version='0.1.13',
       description="streaming mp3 decoder",
       long_description=open('README.md', 'r').read(),
       long_description_content_type='text/markdown',

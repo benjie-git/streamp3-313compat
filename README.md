@@ -1,3 +1,9 @@
+# streamp3-313compat
+
+## This is a fork of streamp3, that converts the project over to a newer cython version, producing code compatible with python3.13.
+
+-----
+
 # streamp3
 
 This library implements streaming MP3 decompression using the LAME library.
